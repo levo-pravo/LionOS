@@ -1,7 +1,11 @@
 # LionOS
 Emulator for LionOS
 
-## Please note!
-My shit doesn't work yet! I will change README.md as soon as it can print "hey wold"
+## Okay what is it
+- BIOS x86_16 (real mode at least now)
+- QEMU make this poop be alive
+- Loading from floppy
+- It says "hai wold"
+
 
 #### If you'd like to help me, you can, I'll be happy
