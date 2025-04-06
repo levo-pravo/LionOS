@@ -6,5 +6,5 @@ $(BUILD_DIR)/main_floppy.img: $(BUILD_DIR)/boot.bin
 	cp $(BUILD_DIR)/boot.bin $(BUILD_DIR)/main_floppy.img
 	truncate -s 1440k $(BUILD_DIR)/main_floppy.img
 
-$(BUILD_DIR)/main.bin: $(BOOT_DIR)/main.asm
+$(BUILD_DIR)/boot.bin: $(BOOT_DIR)/boot.asm
 	$(ASM) $(BOOT_DIR)/boot.asm -f bin -o $(BUILD_DIR)/boot.bin

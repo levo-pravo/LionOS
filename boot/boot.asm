@@ -14,14 +14,15 @@ puts:
 	; save register that will be modified
 	push si
 	push ax
+	mov ah, 0x0e ; int 0x10 needs this
 .loop:
 	lodsb ; loads next character in al
+	; equals to:
+	; mov al, [si]
+	; inc si
 	or al, al; checks if the character is not null
 	jz .done ; jumps if the zero flag is set
-	
-	; calls bios interrupt
-	mov ah, 0x0e
-	mov bh, 0
+	; calls interrupt
 	int 0x10
 	jmp .loop
 .done:
@@ -29,7 +30,31 @@ puts:
 	pop si
 	ret
 
-
+; Reads one line
+reads:
+	push ax
+	push si
+	mov si, one_line
+	mov word [one_line], 0 
+.loop:
+	mov ah, 0 ; reads one character
+	int 0x16 ; ^^^^^^^^^^^^^^^^^^^^
+	cmp al, 0x1C ; is Enter?
+	je .done
+	mov [si], al ; adds the character to the line
+	inc si
+	mov ah, 0x0e ; puts one character
+	int 0x10 ; ^^^^^^^^^^^^^^^^^^^^^^
+	jmp .loop
+.done:
+	;mov [si], ENDL
+	;inc si
+	;mov [si], 0
+	mov al, [str_endl]
+	mov ah, 0x0e
+	int 0x10
+	pop si
+	pop ax
 main:
 	; setup data segments
 	mov ax, 0
@@ -43,13 +68,19 @@ main:
 	; print message
 	mov si, msg_hello
 	call puts
+	mov si, msg_os
+	call puts
+
+	call reads
 
 	hlt
 .halt:
 	jmp .halt
 
+str_endl: db " ", ENDL
 msg_hello: db "hey wold", ENDL, 0
-
+msg_os: db "hi you in front of pc it is me LionOS", ENDL, 0
+one_line: db "hi", 0
 
 times 510-($-$$) db 0
 dw 0AA55h
