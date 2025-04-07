@@ -8,6 +8,7 @@ Emulator for LionOS
 - It says "hai wold"
 - It says "... LionOS"
 - It reads character from keyboard and puts character on screen
+- It reads 1 line BUT!! For magical, ubelievable reasons Enter doesn't work - QEMU is bad. So for a small "x" it reads 1 line. Yeah...
 
 
 #### If you'd like to help me, you can, I'll be happy
