@@ -39,7 +39,7 @@ reads:
 .loop:
 	mov ah, 0 ; reads one character
 	int 0x16 ; ^^^^^^^^^^^^^^^^^^^^
-	cmp al, 0x1C ; is Enter?
+	cmp al, 120d ; is "?" ?
 	je .done
 	mov [si], al ; adds the character to the line
 	inc si
@@ -47,14 +47,15 @@ reads:
 	int 0x10 ; ^^^^^^^^^^^^^^^^^^^^^^
 	jmp .loop
 .done:
-	;mov [si], ENDL
-	;inc si
-	;mov [si], 0
-	mov al, [str_endl]
 	mov ah, 0x0e
+	mov al, 0x0D 
+	int 0x10
+	mov al, 0x0A 
 	int 0x10
 	pop si
 	pop ax
+	ret
+
 main:
 	; setup data segments
 	mov ax, 0
@@ -77,10 +78,9 @@ main:
 .halt:
 	jmp .halt
 
-str_endl: db " ", ENDL
 msg_hello: db "hey wold", ENDL, 0
 msg_os: db "hi you in front of pc it is me LionOS", ENDL, 0
 one_line: db "hi", 0
 
 times 510-($-$$) db 0
-dw 0AA55h
+dw 0xAA55
