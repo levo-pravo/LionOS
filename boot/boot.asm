@@ -3,9 +3,25 @@ bits 16
 
 %define ENDL 0x0D, 0x0A
 
-start:
-	jmp main
+CODE_SEG equ code_descriptor - GDT_Start
+DATA_SEG equ data_descriptor - GDT_Start
+	; use equ for constants
 
+mov si, msg_hello
+call puts
+mov si, msg_flpp
+call puts
+
+cli
+lgdt [GDT_Descriptor]
+; now we change the last bit of cr0 to1
+mov eax, cr0
+or eax, 1 ; this
+mov cr0, eax
+jmp CODE_SEG:start_protected_mode
+
+msg_hello: db "Good morning, sir!", ENDL, 0
+msg_flpp: db "Running from floppy disk...", ENDL, 0
 
 ; Prints a string to the screen
 ; Parameters:
@@ -30,57 +46,35 @@ puts:
 	pop si
 	ret
 
-; Reads one line
-reads:
-	push ax
-	push si
-	mov si, one_line
-	mov word [one_line], 0 
-.loop:
-	mov ah, 0 ; reads one character
-	int 0x16 ; ^^^^^^^^^^^^^^^^^^^^
-	cmp al, 120d ; is "?" ?
-	je .done
-	mov [si], al ; adds the character to the line
-	inc si
-	mov ah, 0x0e ; puts one character
-	int 0x10 ; ^^^^^^^^^^^^^^^^^^^^^^
-	jmp .loop
-.done:
-	mov ah, 0x0e
-	mov al, 0x0D 
-	int 0x10
-	mov al, 0x0A 
-	int 0x10
-	pop si
-	pop ax
-	ret
+GDT_Start:
+	null_descriptor:
+		dd 0 ; four times 00000000
+		dd 0 ; four times 00000000
+	code_descriptor:
+		dw 0xffff
+		dw 0 ; 16 bits +
+		db 0 ; 8 bits = 24
+		db 0b10011010 ; present, privilege, type, Type flags
+		db 0b11001111 ; Other flags + limit (last 4 bits - f)
+		db 0 ; last 8 bits of base
+	data_descriptor:
+		dw 0xffff
+		dw 0 ; 16 bits +
+		db 0 ; 8 bits = 24
+		db 0b10010010 ; present, privilege, type, Type flags
+		db 0b11001111 ; Other flags + limit (last 4 bits - f)
+		db 0 ; last 8 bits of base
+	GDT_End:
 
-main:
-	; setup data segments
-	mov ax, 0
-	mov es, ax
-	mov es, ax
-	
-	; setup stack
-	mov ss, ax
-	mov sp, 0x7C00 ; stack pointer goes backwards, 1000 - 999 - 998...
-	
-	; print message
-	mov si, msg_hello
-	call puts
-	mov si, msg_os
-	call puts
+GDT_Descriptor:
+	dw GDT_End - GDT_Start - 1 ; size
+	dd GDT_Start ; start
 
-	call reads
-
-	hlt
-.halt:
-	jmp .halt
-
-msg_hello: db "hey wold", ENDL, 0
-msg_os: db "hi you in front of pc it is me LionOS", ENDL, 0
-one_line: db "hi", 0
+[bits 32]
+start_protected_mode:
+	mov al, "A"
+	mov ah, 0x0f
+	mov [0xb8000], ax
 
 times 510-($-$$) db 0
 dw 0xAA55
