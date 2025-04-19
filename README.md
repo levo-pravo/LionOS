@@ -1,14 +1,22 @@
-# LionOS
-Emulator for LionOS
+## Scroll down for an English version ⬇
 
-## Okay what is it
-- BIOS x86_16 (real mode at least now)
-- QEMU make this poop be alive
-- Loading from floppy
-- It says "hai wold"
-- It says "... LionOS"
-- It reads character from keyboard and puts character on screen
-- It reads 1 line BUT!! For magical, ubelievable reasons Enter doesn't work - QEMU is bad. So for a small "x" it reads 1 line. Yeah...
+# LionOS - 🇷🇺
+Эмулятор LionOS
 
+## И че это
+- BIOS x86_32
+- Пока живет на QEMU
+- Загрузка с флоппи-диска
+- Переход в защищенный режим есть, но моя ленивая попа еще не сделала ядро
+
+
+# LionOS - 🇺🇸
+LionOS Emulator
+
+## And what is this
+- BIOS x86_32
+- Lives on QEMU for now
+- Boot from floppy disk
+- There is a transition to protected mode, but my lazy ass hasn't made a kernel yet
 
 #### If you'd like to help me, you can, I'll be happy
